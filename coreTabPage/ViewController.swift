@@ -16,18 +16,30 @@ class ViewController: UIViewController,coreTabViewDelegate {
         super.viewDidLoad()
         
         let vc1 = UIViewController()
-        vc1.title = "主页主页主页主页主页主页主页主页主页主页"
+        vc1.title = "联系我们"
         vc1.view.backgroundColor = self.randomColor()
         let vc2 = UIViewController()
-        vc2.title = "内容内容内容内容内容内容内容内容内容内容"
+        vc2.title = "故障解答"
         vc2.view.backgroundColor = self.randomColor()
         let vc3 = UIViewController()
-        vc3.title = "结束结束结束结束结束结束结束结束结束结束"
+        vc3.title = "经验交流"
         vc3.view.backgroundColor = self.randomColor()
+        let vc4 = UIViewController()
+        vc4.title = "近期公告"
+        vc4.view.backgroundColor = self.randomColor()
+        let vc5 = UIViewController()
+        vc5.title = "IT资讯"
+        vc5.view.backgroundColor = self.randomColor()
+        let vc6 = UIViewController()
+        vc6.title = "网上报修"
+        vc6.view.backgroundColor = self.randomColor()
         
         vcArray.append(vc1)
         vcArray.append(vc2)
         vcArray.append(vc3)
+        vcArray.append(vc4)
+        vcArray.append(vc5)
+        vcArray.append(vc6)
         
         let tabPage = coreTabPage()
         
@@ -37,7 +49,8 @@ class ViewController: UIViewController,coreTabViewDelegate {
         tabPage.frame = self.view.frame
         
         tabPage.BuildIn()
-        
+        tabPage.selectPage(1)
+        tabPage.showRedDot(1)
     }
     
     func randomColor() -> UIColor {
@@ -54,7 +67,13 @@ class ViewController: UIViewController,coreTabViewDelegate {
     func viewControllerOfIndex(index: Int) -> UIViewController {
         return vcArray[index]
     }
+    
+    func setFirstPageTag() -> Int? {
+        return 1
+    }
 
-
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
 }
 
