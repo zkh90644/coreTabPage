@@ -32,6 +32,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     lazy var redDotsArray:Array<UIView> = Array<UIView>()
     lazy var currentPageTag:Int = 0
     lazy var startTag:Int = 0
+    lazy var selectedLineOffsetXBeforeMoving:CGFloat = 0
     
 //    两个scrollView
     lazy var bodyScrollView:UIScrollView = {
@@ -53,7 +54,9 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     
 //    用来判断状态的值
     var isBuild:Bool = false
-    var isUstingDragging = true
+    var isUstingDragging:Bool = true
+    var continueDraggingNumber:Int = 0
+    var startOffset:CGFloat = 0
     
     func BuildIn() {
         isBuild = true
@@ -157,11 +160,13 @@ class coreTabPage: UIView,UIScrollViewDelegate {
                 startTag = 0
             }else{
                 startTag = (self.delegate?.setFirstPageTag()!)!
+                bodyScrollView.setContentOffset(CGPoint.init(x:self.width * CGFloat( startTag ), y: 0), animated: false)
             }
             self.baseLine.setWidth(self.buttonTitleRealSize(self.tabsArray[startTag]).width)
             self.baseLine.setCenterX(self.tabsArray[startTag].centerX)
             self.baseLine.setTop(self.tabScrollView.height - 2)
             selectPage(startTag, isAnimate: false)
+//            startOffset = bodyScrollView.contentOffset.x
         }
     }
     
@@ -175,13 +180,15 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         
         if isAnimate {
             UIView.animateWithDuration(0.25, animations: {
-//                            设置下划线的位置
+//              设置下划线的位置
                 self.baseLine.setWidth(self.buttonTitleRealSize(self.tabsArray[index]).width)
                 self.baseLine.setCenterX(self.tabsArray[index].centerX)
+                self.selectedLineOffsetXBeforeMoving = self.baseLine.origin.x
             })
         }else{
             self.baseLine.setWidth(self.buttonTitleRealSize(self.tabsArray[index]).width)
             self.baseLine.setCenterX(self.tabsArray[index].centerX)
+            self.selectedLineOffsetXBeforeMoving = self.baseLine.origin.x
         }
         
         tabScrollView.scrollRectToVisible(currentButton.frame, animated: true)
@@ -204,12 +211,65 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         selectPage(sender.tag,isAnimate: true)
     }
     
+//    滚动条移动的动画
+    func moveSelectedLineByScrollWithOffsetX(offsetX:CGFloat) {
+        let textGap:CGFloat = (self.width - self.tabMargin * 2 - self.baseLine.width * CGFloat( tabsArray.count )) / ( CGFloat( self.tabsArray.count ) * 2)
+        let speed:CGFloat = 10
+        
+        let moveLength:CGFloat = selectedLineOffsetXBeforeMoving + ( offsetX * (textGap + baseLine.width + speed)) / UIScreen.mainScreen().bounds.width //用来防止超过左右最大距离
+        let maxRightMove:CGFloat = selectedLineOffsetXBeforeMoving + textGap * 2 + baseLine.width
+        let maxLeftMove:CGFloat = selectedLineOffsetXBeforeMoving - textGap * 2 - baseLine.width
+        var lineMoveActually:CGFloat = 0
+        
+        var isContinueDragging:Bool = false
+        //多手指移动判断
+        if continueDraggingNumber > 1 {
+            isContinueDragging = true
+        }
+        
+        if moveLength > maxRightMove && !isContinueDragging {
+            lineMoveActually = maxRightMove
+        }else if moveLength < maxLeftMove && !isContinueDragging {
+            lineMoveActually = maxLeftMove
+        }else{
+//            如果存在多指移动，导致移动过长需要阻止
+            if isContinueDragging {
+                if moveLength > bodyScrollView.contentSize.width - (tabMargin + textGap + baseLine.width){
+                    lineMoveActually = bodyScrollView.contentSize.width - (tabMargin + textGap + baseLine.width)
+                }else if moveLength < self.tabMargin + textGap{
+                    lineMoveActually = self.tabMargin + textGap
+                }else{
+                    lineMoveActually = moveLength
+                }
+            }else{
+                lineMoveActually = moveLength
+            }
+        }
+        
+        baseLine.frame = CGRect.init(origin: CGPoint.init(x: lineMoveActually, y: baseLine.frame.origin.y), size: baseLine.frame.size)
+    }
+    
     func showRedDot(index:Int) {
         redDotsArray[index].hidden = false
     }
     
     func hideRedDot(index:Int) {
         redDotsArray[index].hidden = true
+    }
+    
+    // MARK:scrollView Delegate
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+        if scrollView.isEqual(bodyScrollView) {
+            continueDraggingNumber += 1
+            startOffset = bodyScrollView.contentOffset.x
+        }
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        if scrollView.isEqual(bodyScrollView) {
+            let offsetX = scrollView.contentOffset.x - startOffset
+            moveSelectedLineByScrollWithOffsetX(offsetX)
+        }
     }
     
     func scrollViewDidEndDecelerating(scrollView: UIScrollView) {

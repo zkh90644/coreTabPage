@@ -49,7 +49,6 @@ class ViewController: UIViewController,coreTabViewDelegate {
         tabPage.frame = self.view.frame
         
         tabPage.BuildIn()
-        tabPage.selectPage(1)
         tabPage.showRedDot(1)
     }
     
@@ -60,6 +59,7 @@ class ViewController: UIViewController,coreTabViewDelegate {
         return UIColor.init(red: r, green: g, blue: b, alpha: 1)
     }
     
+    //MARK: corePageDelegate
     func numBerOfPage() -> Int {
         return vcArray.count
     }
