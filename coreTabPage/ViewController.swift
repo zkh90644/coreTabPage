@@ -68,8 +68,27 @@ class ViewController: UIViewController,coreTabViewDelegate {
         return vcArray[index]
     }
     
-    func setFirstPageTag() -> Int? {
+    func setFirstPageTag() -> Int {
         return 1
+    }
+    
+    func setSelectLinePosition() -> Int {
+        return coreTabPage.Position.Middle.rawValue
+    }
+    
+    func setSelectLineStye() -> UIView {
+        //需要设置高度和本身的样式
+        let view = UIView.init()
+        view.backgroundColor = UIColor.init(red: 1, green: 140.0/255, blue: 140.0/255, alpha: 1)
+        view.setHeight(25)
+        view.layer.cornerRadius = 8
+        view.layer.masksToBounds = true
+        
+        return view
+    }
+    
+    func setTabColorSelected() -> UIColor {
+        return UIColor.whiteColor()
     }
 
     override func prefersStatusBarHidden() -> Bool {
