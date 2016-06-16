@@ -60,7 +60,7 @@ class ViewController: UIViewController,coreTabViewDelegate {
     }
     
     //MARK: corePageDelegate
-    func numBerOfPage() -> Int {
+    func numberOfPage() -> Int {
         return vcArray.count
     }
     

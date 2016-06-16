@@ -33,13 +33,14 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     lazy var currentPageTag:Int = 0
     lazy var startTag:Int = 0
     lazy var selectedLineOffsetXBeforeMoving:CGFloat = 0
+    lazy var speed:CGFloat = 50
     
 //    两个scrollView
     lazy var bodyScrollView:UIScrollView = {
         let bodyScrollView = UIScrollView.init()
         bodyScrollView.pagingEnabled = true
         bodyScrollView.userInteractionEnabled = true
-        bodyScrollView.bounces = true
+        bodyScrollView.bounces = false
         bodyScrollView.showsHorizontalScrollIndicator = false
         bodyScrollView.autoresizingMask = UIViewAutoresizing(arrayLiteral: .FlexibleHeight,.FlexibleBottomMargin,.FlexibleWidth)
         return bodyScrollView
@@ -54,13 +55,13 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     
 //    用来判断状态的值
     var isBuild:Bool = false
-    var isUstingDragging:Bool = true
+    var isUsingDragging:Bool = false    //用来防止在点击tab的时候调用scrollView
     var continueDraggingNumber:Int = 0
     var startOffset:CGFloat = 0
     
     func BuildIn() {
         isBuild = true
-        let count = self.delegate?.numBerOfPage()
+        let count = self.delegate?.numberOfPage()
         self.addSubview(bodyScrollView)
         self.addSubview(tabScrollView)
         tabScrollView.addSubview(baseLine)
@@ -131,6 +132,8 @@ class coreTabPage: UIView,UIScrollViewDelegate {
 //          获取tab总长度，如果小于self的宽度，那么均分，否则用scrollView滚动，margin变小
             if self.width > buttonSumWidth {
                 maxButtonWidth = ( self.width - tabMargin * 2 ) / CGFloat( tabsArray.count )
+            }else{
+                speed = 10
             }
 
             var sumTabWidth:CGFloat = tabMargin
@@ -205,6 +208,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     
     func switchContent(index:Int,isAnimate:Bool) {
         bodyScrollView.setContentOffset(CGPointMake(CGFloat(index) * self.width, 0), animated: true)
+        isUsingDragging = false
     }
     
     func selectTabButton(sender:UIButton) {
@@ -214,7 +218,6 @@ class coreTabPage: UIView,UIScrollViewDelegate {
 //    滚动条移动的动画
     func moveSelectedLineByScrollWithOffsetX(offsetX:CGFloat) {
         let textGap:CGFloat = (self.width - self.tabMargin * 2 - self.baseLine.width * CGFloat( tabsArray.count )) / ( CGFloat( self.tabsArray.count ) * 2)
-        let speed:CGFloat = 10
         
         let moveLength:CGFloat = selectedLineOffsetXBeforeMoving + ( offsetX * (textGap + baseLine.width + speed)) / UIScreen.mainScreen().bounds.width //用来防止超过左右最大距离
         let maxRightMove:CGFloat = selectedLineOffsetXBeforeMoving + textGap * 2 + baseLine.width
@@ -261,14 +264,18 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
         if scrollView.isEqual(bodyScrollView) {
             continueDraggingNumber += 1
+            
             startOffset = bodyScrollView.contentOffset.x
+            isUsingDragging = true
         }
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         if scrollView.isEqual(bodyScrollView) {
             let offsetX = scrollView.contentOffset.x - startOffset
-            moveSelectedLineByScrollWithOffsetX(offsetX)
+            if isUsingDragging {
+                moveSelectedLineByScrollWithOffsetX(offsetX)
+            }
         }
     }
     
@@ -276,12 +283,13 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         if scrollView.isEqual(self.bodyScrollView) {
             let index:Int = Int( scrollView.contentOffset.x / self.bounds.size.width )
             selectPage(index, isAnimate: true)
+            isUsingDragging = true
         }
     }
 }
 
 protocol coreTabViewDelegate {
     func viewControllerOfIndex(index:Int) -> UIViewController
-    func numBerOfPage() -> Int
+    func numberOfPage() -> Int
     func setFirstPageTag() -> Int?
 }
