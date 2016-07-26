@@ -73,7 +73,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         if ((self.delegate?.setSelectLineStye?()) != nil) {
             customLine = true
             
-//            直接通过basLine = changView的话后面值会消失，不知道原因
+//          直接通过basLine = changView的话后面值会消失，不知道原因
             
             let changeView = (self.delegate?.setSelectLineStye!())!
             
