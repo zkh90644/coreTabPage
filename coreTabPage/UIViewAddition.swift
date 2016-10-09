@@ -165,3 +165,16 @@ extension UIView{
     }
     
 }
+
+extension UILabel{
+    func currentSize() -> CGSize {
+        let label = UILabel()
+        label.font = self.font
+        label.textColor = self.textColor
+        label.textAlignment = self.textAlignment
+        label.text = self.text
+        label.sizeToFit()
+        
+        return label.frame.size
+    }
+}

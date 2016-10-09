@@ -52,12 +52,12 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     
 //    基本属性
     lazy var viewControllersArray:Array<UIViewController> = Array<UIViewController>()
-    lazy var tabsArray:Array<UIButton> = Array<UIButton>()
+    lazy var tabsArray:Array<UILabel> = Array<UILabel>()
     lazy var redDotsArray:Array<UIView> = Array<UIView>()
     lazy var currentPageTag:Int = 0
     lazy var startTag:Int = 0
     lazy var selectedLineOffsetXBeforeMoving:CGFloat = 0
-    lazy var speed:CGFloat = 50
+    lazy var speed:CGFloat = 20
     
 //    两个scrollView
     lazy var bodyScrollView:UIScrollView = {
@@ -93,7 +93,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         if ((self.delegate?.setSelectLineStye?()) != nil) {
             customLine = true
             
-//          直接通过basLine = changView的话后面值会消失，不知道原因
+//          直接通过baseLine = changView的话后面值会消失，不知道原因
             
             let changeView = (self.delegate?.setSelectLineStye!())!
             
@@ -115,13 +115,15 @@ class coreTabPage: UIView,UIScrollViewDelegate {
             bodyScrollView.addSubview(vc!.view)
             
 //            将tabButton放入array
-            let tabItem = UIButton(type: UIButtonType.custom)
-            tabItem.setTitle(vc?.title, for: UIControlState())
-            tabItem.titleLabel?.baselineAdjustment = UIBaselineAdjustment.alignCenters
-            tabItem.titleLabel?.font = UIFont.systemFont(ofSize: titleSize)
-            tabItem.setTitleColor(UIColor.black, for: UIControlState())
-            tabItem.setTitleColor(UIColor.red, for: UIControlState.selected)
-            tabItem.addTarget(self, action:#selector(coreTabPage.selectTabButton(_:)), for: UIControlEvents.touchUpInside)
+            let tapGes = UITapGestureRecognizer(target: self, action: #selector(selectTabButton(_:)))
+            let tabItem = UILabel()
+            tabItem.text = vc?.title
+            tabItem.baselineAdjustment = UIBaselineAdjustment.alignCenters
+            tabItem.textAlignment = .center
+            tabItem.font = UIFont.systemFont(ofSize: titleSize)
+            tabItem.textColor = UIColor.black
+            tabItem.addGestureRecognizer(tapGes)
+            tabItem.isUserInteractionEnabled = true
             tabItem.tag = i
             tabScrollView.addSubview(tabItem)
             tabsArray.append(tabItem)
@@ -158,8 +160,8 @@ class coreTabPage: UIView,UIScrollViewDelegate {
 //          为了防止某些按钮太宽导致样式变丑
             for i in 0..<tabsArray.count {
                 let button = tabsArray[i]
-                if maxButtonWidth < buttonTitleRealSize(button).width {
-                    maxButtonWidth = buttonTitleRealSize(button).width + 10
+                if maxButtonWidth < button.currentSize().width {
+                    maxButtonWidth = button.currentSize().width + 10
                 }
             }
             
@@ -180,20 +182,21 @@ class coreTabPage: UIView,UIScrollViewDelegate {
                 vc.view.frame = CGRect.init(x: bodyScrollView.width * CGFloat(i), y: 0, width: bodyScrollView.width, height: bodyScrollView.height)
                 
 //                tab的scrollView
-                let btn:UIButton = tabsArray[i]
+                let btn:UILabel = tabsArray[i]
                 btn.frame = CGRect(x: sumTabWidth, y: 0, width: maxButtonWidth, height: tabHight)
                 if ((self.delegate?.setTabColorNormal?()) != nil) {
-                    btn.setTitleColor(self.delegate?.setTabColorNormal!(), for: UIControlState())
+                    btn.textColor = self.delegate?.setTabColorNormal!()
+//                    btn.setTitleColor(self.delegate?.setTabColorNormal!(), for: UIControlState())
                 }
                 
-                if ((self.delegate?.setTabColorSelected?()) != nil) {
-                    btn.setTitleColor(self.delegate?.setTabColorSelected!(), for: UIControlState.selected)
-                }
+//                if ((self.delegate?.setTabColorSelected?()) != nil) {
+//                    btn.setTitleColor(self.delegate?.setTabColorSelected!(), for: UIControlState.selected)
+//                }
                 
                 
 //                小红点的frame
                 let redDot = redDotsArray[i]
-                redDot.frame = CGRect.init(x: (maxButtonWidth / 2) + (buttonTitleRealSize(btn).width / 2), y: (btn.height / 2) - buttonTitleRealSize(btn).height / 2 - 3, width: 8, height: 8)
+                redDot.frame = CGRect.init(x: (maxButtonWidth / 2) + (btn.currentSize().width/2), y: (btn.height / 2) - btn.currentSize().height / 2 - 3, width: 8, height: 8)
                 redDot.layer.cornerRadius = redDot.width / 2
                 
                 
@@ -213,7 +216,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
                 startTag = (self.delegate?.setFirstPageTag?())!
                 bodyScrollView.setContentOffset(CGPoint.init(x:self.width * CGFloat( startTag ), y: 0), animated: false)
             }
-            self.baseLine.setWidth(self.buttonTitleRealSize(self.tabsArray[startTag]).width)
+            self.baseLine.setWidth(self.tabsArray[startTag].currentSize().width)
             self.baseLine.setCenterX(self.tabsArray[startTag].centerX)
             
 //            self.baseLine.setTop(self.tabScrollView.height - 2)
@@ -238,20 +241,27 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     
     fileprivate func selectPage(_ index:Int,isAnimate:Bool) {
 //        tab的跳转
-        let preButton = tabsArray[currentPageTag]
-        preButton.isSelected = false
         currentPageTag = index
         let currentButton = tabsArray[index]
-        currentButton.isSelected = true
         
         var buttonWidth:CGFloat = 0
         if customLine {
-            buttonWidth = self.buttonTitleRealSize(self.tabsArray[index]).width + 5
+            buttonWidth = self.tabsArray[index].currentSize().width + 5
         }else{
-            buttonWidth = self.buttonTitleRealSize(self.tabsArray[index]).width
+            buttonWidth = self.tabsArray[index].currentSize().width
         }
         
         if isAnimate {
+//            let x = self.tabsArray[index].centerX - buttonWidth/2
+//            let rect = CGRect(x: x, y: self.baseLine.layer.frame.origin.y, width: buttonWidth, height: self.baseLine.height)
+//            let animation = CABasicAnimation(keyPath: "frame")
+//            animation.fromValue = self.baseLine
+//            animation.toValue = rect
+//            animation.duration = 0.25
+//            self.baseLine.layer.add(animation, forKey: "selectPage")
+//            self.baseLine.layer.frame = rect
+//            self.selectedLineOffsetXBeforeMoving = self.baseLine.origin.x
+            
             UIView.animate(withDuration: 0.25, animations: {
 //              设置下划线的位置
                 self.baseLine.setWidth(buttonWidth)
@@ -281,8 +291,19 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         isUsingDragging = false
     }
     
-    func selectTabButton(_ sender:UIButton) {
-        selectPage(sender.tag,isAnimate: true)
+    func selectTabButton(_ sender:UIGestureRecognizer) {
+        let label = sender.view as! UILabel
+        for item in tabsArray {
+            item.textColor = UIColor.black
+        }
+        
+        if ((self.delegate?.setTabColorSelected?()) != nil) {
+            label.textColor = self.delegate?.setTabColorSelected?()
+        }
+        
+        label.textColor = UIColor.red
+        
+        selectPage(label.tag,isAnimate: true)
     }
     
 //    滚动条移动的动画
