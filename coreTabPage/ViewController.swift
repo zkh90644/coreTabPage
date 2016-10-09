@@ -64,7 +64,7 @@ class ViewController: UIViewController,coreTabViewDelegate {
         return vcArray.count
     }
     
-    func viewControllerOfIndex(index: Int) -> UIViewController {
+    func viewControllerOfIndex(_ index: Int) -> UIViewController {
         return vcArray[index]
     }
     
@@ -72,7 +72,7 @@ class ViewController: UIViewController,coreTabViewDelegate {
         return 1
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
 }

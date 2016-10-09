@@ -200,15 +200,18 @@
 					272B4A101D0FB9C400469660 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 2322UT7HH9;
+						LastSwiftMigration = 0800;
 					};
 					272B4A241D0FB9C400469660 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 2322UT7HH9;
+						LastSwiftMigration = 0800;
 						TestTargetID = 272B4A101D0FB9C400469660;
 					};
 					272B4A2F1D0FB9C400469660 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 2322UT7HH9;
+						LastSwiftMigration = 0800;
 						TestTargetID = 272B4A101D0FB9C400469660;
 					};
 				};
@@ -414,6 +417,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mike.coreTabPage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -425,6 +429,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mike.coreTabPage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -436,6 +441,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mike.coreTabPageTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/coreTabPage.app/coreTabPage";
 			};
 			name = Debug;
@@ -448,6 +454,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mike.coreTabPageTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/coreTabPage.app/coreTabPage";
 			};
 			name = Release;
@@ -459,6 +466,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mike.coreTabPageUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = coreTabPage;
 			};
 			name = Debug;
@@ -470,6 +478,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Mike.coreTabPageUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = coreTabPage;
 			};
 			name = Release;

@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIView{
-    var visible: Bool { return !self.hidden}
+    var visible: Bool { return !self.isHidden}
     var left: CGFloat { return self.frame.origin.x }
     var top: CGFloat { return self.frame.origin.y }
     var right: CGFloat { return self.frame.origin.x+self.frame.size.width }
@@ -42,7 +42,7 @@ extension UIView{
         while !view.isEqual(nil) {
             x += view.left
             
-            if view.isKindOfClass(UIScrollView) {
+            if view.isKind(of: UIScrollView.self) {
                 let scrollView = view as! UIScrollView
                 x -= scrollView.contentOffset.x
             }
@@ -56,7 +56,7 @@ extension UIView{
         var view:UIView = self
         while !view.isEqual(nil) {
             y += view.top
-            if view.isKindOfClass(UIScrollView) {
+            if view.isKind(of: UIScrollView.self) {
                 let scrollView = view as! UIScrollView
                 y -= scrollView.contentOffset.y
             }
@@ -69,67 +69,67 @@ extension UIView{
     var origin: CGPoint { return self.frame.origin }
     var size: CGSize { return self.frame.size}
     
-    func setVisible(visible:Bool) {
-        self.hidden = !visible
+    func setVisible(_ visible:Bool) {
+        self.isHidden = !visible
     }
     
-    func setLeft(left:CGFloat) {
+    func setLeft(_ left:CGFloat) {
         var frame = self.frame
         frame.origin.x = left
         self.frame = frame
     }
     
-    func setTop(y:CGFloat) {
+    func setTop(_ y:CGFloat) {
         var frame = self.frame
         frame.origin.y = y
         self.frame = frame
     }
     
-    func setRight(right:CGFloat) {
+    func setRight(_ right:CGFloat) {
         var frame = self.frame
         frame.origin.x = right - frame.size.width
         self.frame = frame
     }
     
-    func setBottom(bottom:CGFloat) {
+    func setBottom(_ bottom:CGFloat) {
         var frame = self.frame
         frame.origin.y = bottom - frame.size.height
         self.frame = frame
     }
     
-    func setCenterX(centerX:CGFloat) {
+    func setCenterX(_ centerX:CGFloat) {
         self.center = CGPoint(x: centerX, y: self.centerY)
     }
     
-    func setCenterY(centerY:CGFloat) {
+    func setCenterY(_ centerY:CGFloat) {
         self.center = CGPoint(x: self.centerX, y: centerY)
     }
     
-    func setWidth(width:CGFloat) {
+    func setWidth(_ width:CGFloat) {
         var frame = self.frame
         frame.size.width = width
         self.frame = frame
     }
     
-    func setHeight(height:CGFloat) {
+    func setHeight(_ height:CGFloat) {
         var frame = self.frame
         frame.size.height = height
         self.frame = frame
     }
     
-    func setOrigin(origin:CGPoint) {
+    func setOrigin(_ origin:CGPoint) {
         var frame = self.frame
         frame.origin = origin
         self.frame = frame
     }
     
-    func setSize(size:CGSize) {
+    func setSize(_ size:CGSize) {
         var frame = self.frame
         frame.size = size
         self.frame = frame
     }
     
-    func offsetFromView(otherView:UIView) -> CGPoint {
+    func offsetFromView(_ otherView:UIView) -> CGPoint {
         var x:CGFloat = 0
         var y:CGFloat = 0
         var view = self
@@ -141,7 +141,7 @@ extension UIView{
         return CGPoint.init(x: x,y: y)
     }
     
-    func descendantOrSelWithClass<T>(cls: T) -> UIView? {
+    func descendantOrSelWithClass<T>(_ cls: T) -> UIView? {
         if self is T {
             return self
         }else if (self.superview != nil) {
@@ -158,7 +158,7 @@ extension UIView{
         }
     }
     
-    func addSubViews(views:Array<UIView>) {
+    func addSubViews(_ views:Array<UIView>) {
         for v in views {
             self.addSubview(v)
         }

@@ -7,11 +7,31 @@
 //
 
 import UIKit
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class coreTabPage: UIView,UIScrollViewDelegate {
     
     enum Position:Int {
-        case Top = 0,Middle,Bottom
+        case top = 0,middle,bottom
     }
     
     var delegate:coreTabViewDelegate?
@@ -21,10 +41,10 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     let tabHight:CGFloat = 40
     var titleSize:CGFloat = 14
     var maxButtonWidth:CGFloat = 0
-    let tabBackground:UIColor = UIColor.whiteColor()
+    let tabBackground:UIColor = UIColor.white
     var baseLine:UIView = {
         let line = UIView()
-        line.backgroundColor = UIColor.redColor()
+        line.backgroundColor = UIColor.red
         line.setWidth(0)
         line.setHeight(2)
         return line
@@ -42,18 +62,18 @@ class coreTabPage: UIView,UIScrollViewDelegate {
 //    两个scrollView
     lazy var bodyScrollView:UIScrollView = {
         let bodyScrollView = UIScrollView.init()
-        bodyScrollView.pagingEnabled = true
-        bodyScrollView.userInteractionEnabled = true
+        bodyScrollView.isPagingEnabled = true
+        bodyScrollView.isUserInteractionEnabled = true
         bodyScrollView.bounces = false
         bodyScrollView.showsHorizontalScrollIndicator = false
-        bodyScrollView.autoresizingMask = UIViewAutoresizing(arrayLiteral: .FlexibleHeight,.FlexibleBottomMargin,.FlexibleWidth)
+        bodyScrollView.autoresizingMask = UIViewAutoresizing(arrayLiteral: .flexibleHeight,.flexibleBottomMargin,.flexibleWidth)
         return bodyScrollView
     }()
     lazy var tabScrollView:UIScrollView = {
         let tabScrollView = UIScrollView.init()
-        tabScrollView.userInteractionEnabled = true
+        tabScrollView.isUserInteractionEnabled = true
         tabScrollView.showsHorizontalScrollIndicator = false
-        tabScrollView.autoresizingMask = UIViewAutoresizing(arrayLiteral: .FlexibleHeight,.FlexibleBottomMargin,.FlexibleWidth)
+        tabScrollView.autoresizingMask = UIViewAutoresizing(arrayLiteral: .flexibleHeight,.flexibleBottomMargin,.flexibleWidth)
         return tabScrollView
     }()
     
@@ -83,8 +103,8 @@ class coreTabPage: UIView,UIScrollViewDelegate {
             baseLine.layer.cornerRadius = changeView.layer.cornerRadius
         }
         
-        bodyScrollView.frame = CGRectMake(0, tabHight, self.width, self.height)
-        tabScrollView.frame = CGRectMake(self.left, self.top , self.width, tabHight)
+        bodyScrollView.frame = CGRect(x: 0, y: tabHight, width: self.width, height: self.height)
+        tabScrollView.frame = CGRect(x: self.left, y: self.top , width: self.width, height: tabHight)
         
         bodyScrollView.delegate = self;
         
@@ -95,22 +115,22 @@ class coreTabPage: UIView,UIScrollViewDelegate {
             bodyScrollView.addSubview(vc!.view)
             
 //            将tabButton放入array
-            let tabItem = UIButton(type: UIButtonType.Custom)
-            tabItem.setTitle(vc?.title, forState: UIControlState.Normal)
-            tabItem.titleLabel?.baselineAdjustment = UIBaselineAdjustment.AlignCenters
-            tabItem.titleLabel?.font = UIFont.systemFontOfSize(titleSize)
-            tabItem.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-            tabItem.setTitleColor(UIColor.redColor(), forState: UIControlState.Selected)
-            tabItem.addTarget(self, action:#selector(coreTabPage.selectTabButton(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+            let tabItem = UIButton(type: UIButtonType.custom)
+            tabItem.setTitle(vc?.title, for: UIControlState())
+            tabItem.titleLabel?.baselineAdjustment = UIBaselineAdjustment.alignCenters
+            tabItem.titleLabel?.font = UIFont.systemFont(ofSize: titleSize)
+            tabItem.setTitleColor(UIColor.black, for: UIControlState())
+            tabItem.setTitleColor(UIColor.red, for: UIControlState.selected)
+            tabItem.addTarget(self, action:#selector(coreTabPage.selectTabButton(_:)), for: UIControlEvents.touchUpInside)
             tabItem.tag = i
             tabScrollView.addSubview(tabItem)
             tabsArray.append(tabItem)
             
 //            将红点加入tabButton
             let redDot = UIView()
-            redDot.backgroundColor = UIColor.redColor()
+            redDot.backgroundColor = UIColor.red
             redDot.layer.masksToBounds = true
-            redDot.hidden = true
+            redDot.isHidden = true
             redDot.tag = i
             redDotsArray.append(redDot)
             tabItem.addSubview(redDot)
@@ -123,9 +143,9 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         
     }
     
-    private func buttonTitleRealSize(button:UIButton) -> CGSize {
+    fileprivate func buttonTitleRealSize(_ button:UIButton) -> CGSize {
         let string =  (button.titleLabel?.text)! as NSString
-        return string.sizeWithAttributes([NSFontAttributeName:(button.titleLabel?.font)!])
+        return string.size(attributes: [NSFontAttributeName:(button.titleLabel?.font)!])
     }
     
     override func layoutSubviews() {
@@ -161,13 +181,13 @@ class coreTabPage: UIView,UIScrollViewDelegate {
                 
 //                tab的scrollView
                 let btn:UIButton = tabsArray[i]
-                btn.frame = CGRectMake(sumTabWidth, 0, maxButtonWidth, tabHight)
+                btn.frame = CGRect(x: sumTabWidth, y: 0, width: maxButtonWidth, height: tabHight)
                 if ((self.delegate?.setTabColorNormal?()) != nil) {
-                    btn.setTitleColor(self.delegate?.setTabColorNormal!(), forState: UIControlState.Normal)
+                    btn.setTitleColor(self.delegate?.setTabColorNormal!(), for: UIControlState())
                 }
                 
                 if ((self.delegate?.setTabColorSelected?()) != nil) {
-                    btn.setTitleColor(self.delegate?.setTabColorSelected!(), forState: UIControlState.Selected)
+                    btn.setTitleColor(self.delegate?.setTabColorSelected!(), for: UIControlState.selected)
                 }
                 
                 
@@ -201,11 +221,11 @@ class coreTabPage: UIView,UIScrollViewDelegate {
             if self.delegate?.setSelectLinePosition?() != nil {
                 if let position = Position.init(rawValue: (self.delegate?.setSelectLinePosition?())!){
                     switch position {
-                    case .Top:
+                    case .top:
                         baseLine.setTop(0)
-                    case .Middle:
+                    case .middle:
                         self.baseLine.setCenterY(self.tabScrollView.centerY)
-                    case .Bottom:
+                    case .bottom:
                         fallthrough
                     default:
                         self.baseLine.setTop(self.tabScrollView.height - 2)
@@ -216,13 +236,13 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         }
     }
     
-    private func selectPage(index:Int,isAnimate:Bool) {
+    fileprivate func selectPage(_ index:Int,isAnimate:Bool) {
 //        tab的跳转
         let preButton = tabsArray[currentPageTag]
-        preButton.selected = false
+        preButton.isSelected = false
         currentPageTag = index
         let currentButton = tabsArray[index]
-        currentButton.selected = true
+        currentButton.isSelected = true
         
         var buttonWidth:CGFloat = 0
         if customLine {
@@ -232,7 +252,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         }
         
         if isAnimate {
-            UIView.animateWithDuration(0.25, animations: {
+            UIView.animate(withDuration: 0.25, animations: {
 //              设置下划线的位置
                 self.baseLine.setWidth(buttonWidth)
                 self.baseLine.setCenterX(self.tabsArray[index].centerX)
@@ -252,24 +272,24 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         hideRedDot(index)
     }
     
-    private func selectPage(index:Int) {
+    fileprivate func selectPage(_ index:Int) {
         self.selectPage(index, isAnimate: false)
     }
     
-    private func switchContent(index:Int,isAnimate:Bool) {
-        bodyScrollView.setContentOffset(CGPointMake(CGFloat(index) * self.width, 0), animated: true)
+    fileprivate func switchContent(_ index:Int,isAnimate:Bool) {
+        bodyScrollView.setContentOffset(CGPoint(x: CGFloat(index) * self.width, y: 0), animated: true)
         isUsingDragging = false
     }
     
-    func selectTabButton(sender:UIButton) {
+    func selectTabButton(_ sender:UIButton) {
         selectPage(sender.tag,isAnimate: true)
     }
     
 //    滚动条移动的动画
-    func moveSelectedLineByScrollWithOffsetX(offsetX:CGFloat) {
+    func moveSelectedLineByScrollWithOffsetX(_ offsetX:CGFloat) {
         let textGap:CGFloat = (self.width - self.tabMargin * 2 - self.baseLine.width * CGFloat( tabsArray.count )) / ( CGFloat( self.tabsArray.count ) * 2)
         
-        let moveLength:CGFloat = selectedLineOffsetXBeforeMoving + ( offsetX * (textGap + baseLine.width + speed)) / UIScreen.mainScreen().bounds.width //用来防止超过左右最大距离
+        let moveLength:CGFloat = selectedLineOffsetXBeforeMoving + ( offsetX * (textGap + baseLine.width + speed)) / UIScreen.main.bounds.width //用来防止超过左右最大距离
         let maxRightMove:CGFloat = selectedLineOffsetXBeforeMoving + textGap * 2 + baseLine.width
         let maxLeftMove:CGFloat = selectedLineOffsetXBeforeMoving - textGap * 2 - baseLine.width
         var lineMoveActually:CGFloat = 0
@@ -302,16 +322,16 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         baseLine.frame = CGRect.init(origin: CGPoint.init(x: lineMoveActually, y: baseLine.frame.origin.y), size: baseLine.frame.size)
     }
     
-    func showRedDot(index:Int) {
-        redDotsArray[index].hidden = false
+    func showRedDot(_ index:Int) {
+        redDotsArray[index].isHidden = false
     }
     
-    func hideRedDot(index:Int) {
-        redDotsArray[index].hidden = true
+    func hideRedDot(_ index:Int) {
+        redDotsArray[index].isHidden = true
     }
     
     // MARK:scrollView Delegate
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView.isEqual(bodyScrollView) {
             continueDraggingNumber += 1
             
@@ -320,7 +340,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         }
     }
     
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.isEqual(bodyScrollView) {
             let offsetX = scrollView.contentOffset.x - startOffset
             if isUsingDragging {
@@ -329,7 +349,7 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         }
     }
     
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if scrollView.isEqual(self.bodyScrollView) {
             let index:Int = Int( scrollView.contentOffset.x / self.bounds.size.width )
             selectPage(index, isAnimate: true)
@@ -340,13 +360,13 @@ class coreTabPage: UIView,UIScrollViewDelegate {
 
 @objc protocol coreTabViewDelegate {
     
-    optional func setSelectLinePosition() -> Int
-    optional func setFirstPageTag() -> Int
-    optional func setSelectLineStye() -> UIView
-    optional func setTabColorNormal() -> UIColor
-    optional func setTabColorSelected() -> UIColor
+    @objc optional func setSelectLinePosition() -> Int
+    @objc optional func setFirstPageTag() -> Int
+    @objc optional func setSelectLineStye() -> UIView
+    @objc optional func setTabColorNormal() -> UIColor
+    @objc optional func setTabColorSelected() -> UIColor
     
-    func viewControllerOfIndex(index:Int) -> UIViewController
+    func viewControllerOfIndex(_ index:Int) -> UIViewController
     func numberOfPage() -> Int
     
 }
