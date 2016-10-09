@@ -243,6 +243,17 @@ class coreTabPage: UIView,UIScrollViewDelegate {
 //        tab的跳转
         currentPageTag = index
         let currentButton = tabsArray[index]
+        //////////////////////////////////////////
+        for item in tabsArray {
+            item.textColor = UIColor.black
+        }
+        
+        if ((self.delegate?.setTabColorSelected?()) != nil) {
+            tabsArray[currentPageTag].textColor = self.delegate?.setTabColorSelected?()
+        }else{
+            tabsArray[currentPageTag].textColor = UIColor.red
+        }
+        
         
         var buttonWidth:CGFloat = 0
         if customLine {
@@ -252,16 +263,6 @@ class coreTabPage: UIView,UIScrollViewDelegate {
         }
         
         if isAnimate {
-//            let x = self.tabsArray[index].centerX - buttonWidth/2
-//            let rect = CGRect(x: x, y: self.baseLine.layer.frame.origin.y, width: buttonWidth, height: self.baseLine.height)
-//            let animation = CABasicAnimation(keyPath: "frame")
-//            animation.fromValue = self.baseLine
-//            animation.toValue = rect
-//            animation.duration = 0.25
-//            self.baseLine.layer.add(animation, forKey: "selectPage")
-//            self.baseLine.layer.frame = rect
-//            self.selectedLineOffsetXBeforeMoving = self.baseLine.origin.x
-            
             UIView.animate(withDuration: 0.25, animations: {
 //              设置下划线的位置
                 self.baseLine.setWidth(buttonWidth)
@@ -293,15 +294,6 @@ class coreTabPage: UIView,UIScrollViewDelegate {
     
     func selectTabButton(_ sender:UIGestureRecognizer) {
         let label = sender.view as! UILabel
-        for item in tabsArray {
-            item.textColor = UIColor.black
-        }
-        
-        if ((self.delegate?.setTabColorSelected?()) != nil) {
-            label.textColor = self.delegate?.setTabColorSelected?()
-        }
-        
-        label.textColor = UIColor.red
         
         selectPage(label.tag,isAnimate: true)
     }
